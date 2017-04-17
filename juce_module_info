@@ -1,0 +1,32 @@
+{
+  "id": "Bach",
+  "name": "Bach",
+  "version": "0.0.1",
+  "description": "Add description",
+  "website": "Add URL",
+  "license": "Not Specified",
+  "dependencies": [
+    {
+      "id": "juce_core",
+      "version": "matching"
+    },
+    {
+      "id": "juce_data_structures",
+      "version": "matching"
+    }
+  ],
+  "include": "Bach.h",
+  "compile": [
+    {
+      "file": "Bach.cpp",
+      "target": "! xcode"
+    },
+    {
+      "file": "Bach.mm",
+      "target": "xcode"
+    }
+  ],
+  "browse": [
+    "Bach/*"
+  ]
+}
