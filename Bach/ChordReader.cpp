@@ -1,4 +1,4 @@
-/*
+﻿/*
   ==============================================================================
 
     ChordReader.cpp
@@ -7,44 +7,37 @@
 
   ==============================================================================
 */
-
 #include "ChordReader.h"
-ChordReader::ChordReader()
+Bach::ChordReader::ChordReader()
 {
 	resetState();
 }
 
-void ChordReader::resetState()
+void Bach::ChordReader::resetState()
 {
-	map<String, Array<String>> symbls = {
-		{ "m",{ "m3", "P5" } },
-		{ "mi",{ "m3", "P5" } },
-		{ "min",{ "m3", "P5" } },
-		{ "-",{ "m3", "P5" } },
-
-		{ "M",{ "M3", "P5" } },
-		{ "ma",{ "M3", "P5" } },
-		{ "",{ "M3", "P5" } },
-
-		{ "+",{ "M3", "A5" } },
-		{ "aug",{ "M3", "A5" } },
-
-		{ "dim",{ "m3", "d5" } },
-		{ "o",{ "m3", "d5" } },
-
-		{ "maj",{ "M3", "P5", "M7" } },
-		{ "dom",{ "M3", "P5", "m7" } },
-		//{ "ø",{ "m3", "d5", "m7" } },
-
-		{ "5",{ "P5" } },
-
-		{ "6/9",{ "M3", "P5", "M6", "M9" } }
-	};
 	SYMBOLS.clear();
-	for (auto const& m_pair : symbls)
-	{
-		SYMBOLS.set(m_pair.first, m_pair.second);
-	}
+	SYMBOLS.set("m", { "m3", "P5" });
+	SYMBOLS.set("mi", { "m3", "P5" });
+	SYMBOLS.set("min", { "m3", "P5" });
+	SYMBOLS.set("-", { "m3", "P5" });
+
+	SYMBOLS.set("M", { "M3", "P5" });
+	SYMBOLS.set("ma", { "M3", "P5" });
+	SYMBOLS.set("", { "M3", "P5" });
+
+	SYMBOLS.set("+", { "M3", "A5" });
+	SYMBOLS.set("aug", { "M3", "A5" });
+
+	SYMBOLS.set("dim", { "m3", "d5" });
+	SYMBOLS.set("o", { "m3", "d5" });
+
+	SYMBOLS.set("maj", { "M3", "P5", "M7" });
+	SYMBOLS.set("dom", { "M3", "P5", "m7" });
+	//SYMBOLS.set("ø",{ "m3", "d5", "m7" });
+
+	SYMBOLS.set("5", { "P5" });
+
+	SYMBOLS.set("6/9", { "M3", "P5", "M6", "M9" });
 	//c
 	parsing = "quality";
 	additionals.clear();
@@ -54,7 +47,7 @@ void ChordReader::resetState()
 	explicitMajor = false;
 }
 
-void ChordReader::setChord(String name)
+void Bach::ChordReader::setChord(String name)
 {
 	Array<String> intervals = SYMBOLS[name];
 	for (int i = 0, len = intervals.size(); i < len; i++) {
@@ -64,21 +57,21 @@ void ChordReader::setChord(String name)
 	chordLength = intervals.size();
 }
 
-Array<String> ChordReader::split(string s, regex regexDelimiter)
+Array<String> Bach::ChordReader::split(::std::string s, ::std::regex regexDelimiter)
 {
 	Array<String> outArray;
-	std::vector<std::string> out;
+	::std::vector<::std::string> out;
 
-	std::regex re = regexDelimiter;
-	std::string word;
+	::std::regex re = regexDelimiter;
+	::std::string word;
 
 	auto i = s.begin();
 	while (i != s.end()) {
-		std::match_results<std::string::iterator> m;
-		if (std::regex_match(i, s.end(), m, re)) {
+		::std::match_results<::std::string::iterator> m;
+		if (regex_match(i, s.end(), m, re)) {
 			out.push_back(word);
 			word.clear();
-			out.push_back(std::string(m[1].first, m[1].second));
+			out.push_back(::std::string(m[1].first, m[1].second));
 			i += out.back().size();
 		}
 		else {
@@ -95,7 +88,7 @@ Array<String> ChordReader::split(string s, regex regexDelimiter)
 	return outArray;
 }
 
-Array<String> ChordReader::readChord(String symbol)
+Array<String> Bach::ChordReader::readChord(String symbol)
 {
 	resetState();
 	// Remove whitespace, commas and parentheses
@@ -105,7 +98,7 @@ Array<String> ChordReader::readChord(String symbol)
 	//Array<String> charArr = split(symbol.toStdString(), regexDelimiter);
 	for (int i = 0, len = symbol.length(); i < len; i++) {
 		char ch = symbol.toStdString().at(i);
-		std::string str(1, ch);
+		::std::string str(1, ch);
 		c = str;
 		if (parsing == "quality") {
 			String sub3 = (i + 2) < len ? String(symbol.toStdString().substr(i, 3)).toLowerCase() : "invalid";
@@ -157,9 +150,9 @@ Array<String> ChordReader::readChord(String symbol)
       parsing = "alterations";
     }
 		else if (parsing == "alterations") {
-			string symbolToSplit = symbol.toStdString().substr(i);
-			string regexString = "\(#|b|add|maj|sus|M).*";
-			regex regexDelimiter(regexString, std::regex_constants::icase);
+			::std::string symbolToSplit = symbol.toStdString().substr(i);
+			::std::string regexString = "\(#|b|add|maj|sus|M).*";
+			::std::regex regexDelimiter(regexString, ::std::regex_constants::icase);
 			Array<String> alterations = split(symbolToSplit, regexDelimiter);
 			int next;
 			bool flat = false;

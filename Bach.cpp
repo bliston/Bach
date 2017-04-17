@@ -2,7 +2,7 @@
 /*
 MIT License
 
-Copyright (c) [year] [fullname]
+Copyright (c) [2017] [SongWish Inc.]
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,13 +25,6 @@ SOFTWARE.
 */
 
 
-#include "AppConfig.h"
+//#include "AppConfig.h"
 #include "Bach.h"
-
-
-namespace Bach {
-
-#include "Bach\ChordReader.cpp"
-
-}
-
+#include "Bach/ChordReader.cpp"

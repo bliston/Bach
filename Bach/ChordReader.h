@@ -10,13 +10,11 @@
 
 #ifndef CHORDREADER_H_INCLUDED
 #define CHORDREADER_H_INCLUDED
-#include "../JuceLibraryCode/JuceHeader.h"
-#include <map>
+#include "BachCommon.h"
 #include<string>
 #include<regex>
-#include <vector>
-#include <iostream>
-using namespace std;
+#include<vector>
+namespace Bach {
 class ChordReader {
 public:
     ChordReader();
@@ -32,9 +30,9 @@ private:
 	bool explicitMajor;
 	void resetState();
 	void setChord(String name);
-	Array<String> split(string s, regex regexDelimiter);
+	Array<String> split(::std::string s, ::std::regex regexDelimiter);
 };
-
+}
 
 
 

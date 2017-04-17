@@ -2,7 +2,7 @@
 /*
 MIT License
 
-Copyright (c) [year] [fullname]
+Copyright (c) [2017] [SongWish Inc.]
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -35,13 +35,4 @@ BEGIN_JUCE_MODULE_DECLARATION
 */
 
 #pragma once
-#include <modules/juce_core/juce_core.h>
-#include <modules/juce_data_structures/juce_data_structures.h>
-
-namespace Bach {
-using namespace juce;
-
-#include "Bach\ChordReader.h"
-
-}
-
+#include "Bach/ChordReader.h"
