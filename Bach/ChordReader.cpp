@@ -15,6 +15,23 @@ Bach::ChordReader::ChordReader()
 
 void Bach::ChordReader::resetState()
 {
+	INTERVALS.clear();
+	INTERVALS.set("P1", 0); INTERVALS.set("d2", 0);
+	INTERVALS.set("m2", 1); INTERVALS.set("A1", 1);
+	INTERVALS.set("M2", 2); INTERVALS.set("d3", 2);
+	INTERVALS.set("m3", 3); INTERVALS.set("A2", 3);
+	INTERVALS.set("M3", 4); INTERVALS.set("d4", 4);
+	INTERVALS.set("P4", 5); INTERVALS.set("A3", 5);
+	INTERVALS.set("d5", 6); INTERVALS.set("A4", 6);
+	INTERVALS.set("P5", 7); INTERVALS.set("d6", 7);
+	INTERVALS.set("m6", 8); INTERVALS.set("A5", 8);
+	INTERVALS.set("M6", 9); INTERVALS.set("d7", 8);
+	INTERVALS.set("m7", 10); INTERVALS.set("A6", 10);
+	INTERVALS.set("M7", 11); INTERVALS.set("d8", 11);
+	INTERVALS.set("P8", 12); INTERVALS.set("A7", 12);
+	INTERVALS.set("m7", 10); INTERVALS.set("A6", 10);
+	INTERVALS.set("M7", 11); INTERVALS.set("d8", 11);
+	INTERVALS.set("P8", 12); INTERVALS.set("A7", 12);
 	SYMBOLS.clear();
 	SYMBOLS.set("m", { "m3", "P5" });
 	SYMBOLS.set("mi", { "m3", "P5" });
@@ -122,7 +139,7 @@ Array<String> Bach::ChordReader::readChord(String symbol)
 			i += name.length() - 1;
 			parsing = "extension";
 		} else if (parsing == "extension") {
-      c = (c == "1" && symbol[i + 1]) ? String(symbol.toStdString().substr(i, 2)).getIntValue() : c;
+      c = (c == "1" && symbol[i + 1]) ? String(symbol.toStdString().substr(i, 2)).getIntValue() : (int)c;
 
       if (c && (int)c != 6) {
         chordLength = ((double)c - 1) / 2;
@@ -311,4 +328,16 @@ Array<String> Bach::ChordReader::readChord(String symbol)
 	notes.removeRange((int)chordLength + 1, notes.size());
 	notes.addArray(additionals);
 	return notes;
+}
+
+Array<int> Bach::ChordReader::midiChord(String symbol, int rootMIDI)
+{
+	Array<int> midChord;
+	Array<String> intervalChord = readChord(symbol);
+	for (auto i : intervalChord)
+	{
+		jassert(INTERVALS.contains(i));
+		midChord.add(INTERVALS[i] + rootMIDI);
+	}
+	return midChord;
 }

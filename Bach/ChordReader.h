@@ -17,8 +17,10 @@
 namespace Bach {
 class ChordReader {
 public:
+	HashMap<String, int> INTERVALS;
     ChordReader();
 	Array<String> readChord(String symbol);
+	Array<int> midiChord(String symbol, int rootMIDI);
 private:
     HashMap<String, Array<String>> SYMBOLS;
 	var c;
