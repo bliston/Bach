@@ -27,4 +27,8 @@ SOFTWARE.
 
 //#include "AppConfig.h"
 #include "Bach.h"
-#include "Bach/ChordReader.cpp"
+#include "Bach/MusicalStructures/Chord/Chord.cpp"
+#include "Bach/MusicalStructures/Chord/ChordNameToMidiNotes.cpp"
+#include "Bach/MusicalStructures/Chord/MidiNotesToChordName.cpp"
+#include "Bach/MusicalStructures/Note/Note.cpp"
+#include "Bach/Utils/MidiUtils.cpp"

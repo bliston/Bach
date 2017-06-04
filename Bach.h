@@ -35,4 +35,8 @@ BEGIN_JUCE_MODULE_DECLARATION
 */
 
 #pragma once
-#include "Bach/ChordReader.h"
+#include "Bach/MusicalStructures/Chord/Chord.h"
+#include "Bach/MusicalStructures/Chord/ChordNameToMidiNotes.h"
+#include "Bach/MusicalStructures/Chord/MidiNotesToChordName.h"
+#include "Bach/MusicalStructures/Note/Note.h"
+#include "Bach/Utils/MidiUtils.h"

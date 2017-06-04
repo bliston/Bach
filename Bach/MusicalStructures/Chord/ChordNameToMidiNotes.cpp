@@ -1,70 +1,27 @@
 ﻿/*
   ==============================================================================
 
-    ChordReader.cpp
+    ChordNameToMidiNotes.cpp
     Created: 7 Apr 2017 5:49:51pm
     Author:  blist
 
   ==============================================================================
 */
-#include "ChordReader.h"
-Bach::ChordReader::ChordReader()
+#include "ChordNameToMidiNotes.h"
+
+struct Bach::ChordRootAndType
+{
+	int root;
+	String type;
+};
+
+Bach::ChordNameToMidiNotes::ChordNameToMidiNotes()
 {
 	resetState();
 }
 
-void Bach::ChordReader::resetState()
+void Bach::ChordNameToMidiNotes::resetState()
 {
-	INTERVALS.clear();
-	INTERVALS.set("P1", 0); INTERVALS.set("d2", 0);
-	INTERVALS.set("m2", 1); INTERVALS.set("A1", 1);
-	INTERVALS.set("M2", 2); INTERVALS.set("d3", 2);
-	INTERVALS.set("m3", 3); INTERVALS.set("A2", 3);
-	INTERVALS.set("M3", 4); INTERVALS.set("d4", 4);
-	INTERVALS.set("P4", 5); INTERVALS.set("A3", 5);
-	INTERVALS.set("d5", 6); INTERVALS.set("A4", 6);
-	INTERVALS.set("P5", 7); INTERVALS.set("d6", 7);
-	INTERVALS.set("m6", 8); INTERVALS.set("A5", 8);
-	INTERVALS.set("M6", 9); INTERVALS.set("d7", 8);
-	INTERVALS.set("m7", 10); INTERVALS.set("A6", 10);
-	INTERVALS.set("M7", 11); INTERVALS.set("d8", 11);
-	INTERVALS.set("P8", 12); INTERVALS.set("A7", 12); INTERVALS.set("d9", 12);
-	INTERVALS.set("m9", 13); INTERVALS.set("A8", 13);
-	INTERVALS.set("M9", 14); INTERVALS.set("d10", 14);
-	INTERVALS.set("m10", 15); INTERVALS.set("A9", 15);
-	INTERVALS.set("M10", 16); INTERVALS.set("d11", 16);
-	INTERVALS.set("P11", 17); INTERVALS.set("A10", 17);
-	INTERVALS.set("d12", 18); INTERVALS.set("A11", 18);
-	INTERVALS.set("P12", 19); INTERVALS.set("d13", 19);
-	INTERVALS.set("m13", 20); INTERVALS.set("A12", 20);
-	INTERVALS.set("M13", 21); INTERVALS.set("d14", 21);
-	INTERVALS.set("m14", 22); INTERVALS.set("A13", 22);
-	INTERVALS.set("M14", 23); INTERVALS.set("d15", 23);
-	INTERVALS.set("P15", 24); INTERVALS.set("A14", 24);
-	INTERVALS.set("A15", 25);
-	SYMBOLS.clear();
-	SYMBOLS.set("m", { "m3", "P5" });
-	SYMBOLS.set("mi", { "m3", "P5" });
-	SYMBOLS.set("min", { "m3", "P5" });
-	SYMBOLS.set("-", { "m3", "P5" });
-
-	SYMBOLS.set("M", { "M3", "P5" });
-	SYMBOLS.set("ma", { "M3", "P5" });
-	SYMBOLS.set("", { "M3", "P5" });
-
-	SYMBOLS.set("+", { "M3", "A5" });
-	SYMBOLS.set("aug", { "M3", "A5" });
-
-	SYMBOLS.set("dim", { "m3", "d5" });
-	SYMBOLS.set("o", { "m3", "d5" });
-
-	SYMBOLS.set("maj", { "M3", "P5", "M7" });
-	SYMBOLS.set("dom", { "M3", "P5", "m7" });
-	//SYMBOLS.set("ø",{ "m3", "d5", "m7" });
-
-	SYMBOLS.set("5", { "P5" });
-
-	SYMBOLS.set("6/9", { "M3", "P5", "M6", "M9" });
 	//c
 	parsing = "quality";
 	additionals.clear();
@@ -74,9 +31,9 @@ void Bach::ChordReader::resetState()
 	explicitMajor = false;
 }
 
-void Bach::ChordReader::setChord(String name)
+void Bach::ChordNameToMidiNotes::setChord(String name)
 {
-	Array<String> intervals = SYMBOLS[name];
+	Array<String> intervals = midiUtils.chordSymbolToIntervalArray(name);
 	for (int i = 0, len = intervals.size(); i < len; i++) {
 		notes.set(i + 1, intervals[i]);
 	}
@@ -84,7 +41,7 @@ void Bach::ChordReader::setChord(String name)
 	chordLength = intervals.size();
 }
 
-Array<String> Bach::ChordReader::split(::std::string s, ::std::regex regexDelimiter)
+Array<String> Bach::ChordNameToMidiNotes::split(::std::string s, ::std::regex regexDelimiter)
 {
 	Array<String> outArray;
 	::std::vector<::std::string> out;
@@ -115,7 +72,7 @@ Array<String> Bach::ChordReader::split(::std::string s, ::std::regex regexDelimi
 	return outArray;
 }
 
-Array<String> Bach::ChordReader::readChord(String symbol)
+Array<String> Bach::ChordNameToMidiNotes::readChord(String symbol)
 {
 	resetState();
 	// Remove whitespace, commas and parentheses
@@ -130,11 +87,11 @@ Array<String> Bach::ChordReader::readChord(String symbol)
 		if (parsing == "quality") {
 			String sub3 = (i + 2) < len ? String(symbol.toStdString().substr(i, 3)).toLowerCase() : "invalid";
 			String sub2 = (i + 1) < len ? String(symbol.toStdString().substr(i, 2)).toLowerCase() : "invalid";
-			if (SYMBOLS.contains(sub3))
+			if (midiUtils.isValidBasicChordSymbol(sub3))
 				name = sub3;
-			else if (SYMBOLS.contains(sub2))
+			else if (midiUtils.isValidBasicChordSymbol(sub2))
 				name = sub2;
-			else if (SYMBOLS.contains(c))
+			else if (midiUtils.isValidBasicChordSymbol(c))
 				name = c;
 			else
 				name = "";
@@ -340,14 +297,42 @@ Array<String> Bach::ChordReader::readChord(String symbol)
 	return notes;
 }
 
-Array<int> Bach::ChordReader::midiChord(String symbol, int rootMIDI)
+Bach::ChordRootAndType Bach::ChordNameToMidiNotes::getChordRootAndType(String chordName, int octave)
+{
+	String rootNote = chordName.substring(0, 2);
+	int rootMidiNoteNumber = midiUtils.pitchClassAndOctaveToMidiNumber(rootNote, octave);
+	String type = chordName.substring(2);
+	if (!midiUtils.isPitchClass(rootNote))
+	{
+		rootNote = chordName.substring(0, 1);
+		rootMidiNoteNumber = midiUtils.pitchClassAndOctaveToMidiNumber(rootNote, octave);
+		type = chordName.substring(1);
+		if (!midiUtils.isPitchClass(rootNote))
+		{
+			return {-1, "INVALID"};
+		}
+	}
+	return {rootMidiNoteNumber, type};
+}
+
+int Bach::ChordNameToMidiNotes::getChordRoot(String chordName, int octave)
+{
+	return getChordRootAndType(chordName, octave).root;
+}
+
+String Bach::ChordNameToMidiNotes::getChordType(String chordName, int octave)
+{
+	return getChordRootAndType(chordName, octave).type;
+}
+
+Array<int> Bach::ChordNameToMidiNotes::get(int chordRoot, String chordType)
 {
 	Array<int> midChord;
-	Array<String> intervalChord = readChord(symbol);
-	for (auto i : intervalChord)
+	Array<String> intervalArray = readChord(chordType);
+	for (auto i : intervalArray)
 	{
-		jassert(INTERVALS.contains(i));
-		midChord.add(INTERVALS[i] + rootMIDI);
+		jassert(midiUtils.isValidInterval(i));
+		midChord.add(midiUtils.intervalToMidiNoteValue(i) + chordRoot);
 	}
 	return midChord;
 }
