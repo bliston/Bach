@@ -41,37 +41,6 @@ void Bach::ChordNameToMidiNotes::setChord(String name)
 	chordLength = intervals.size();
 }
 
-Array<String> Bach::ChordNameToMidiNotes::split(::std::string s, ::std::regex regexDelimiter)
-{
-	Array<String> outArray;
-	::std::vector<::std::string> out;
-
-	::std::regex re = regexDelimiter;
-	::std::string word;
-
-	auto i = s.begin();
-	while (i != s.end()) {
-		::std::match_results<::std::string::iterator> m;
-		if (regex_match(i, s.end(), m, re)) {
-			out.push_back(word);
-			word.clear();
-			out.push_back(::std::string(m[1].first, m[1].second));
-			i += out.back().size();
-		}
-		else {
-			word += *i++;
-		}
-	}
-	if (!word.empty()) {
-		out.push_back(word);
-	}
-	for (auto& a : out)
-	{
-		outArray.add(a);
-	}
-	return outArray;
-}
-
 Array<String> Bach::ChordNameToMidiNotes::readChord(String symbol)
 {
 	resetState();
@@ -137,7 +106,7 @@ Array<String> Bach::ChordNameToMidiNotes::readChord(String symbol)
 			::std::string symbolToSplit = symbol.toStdString().substr(i);
 			::std::string regexString = "\(#|b|add|maj|sus|M).*";
 			::std::regex regexDelimiter(regexString, ::std::regex_constants::icase);
-			Array<String> alterations = split(symbolToSplit, regexDelimiter);
+			Array<String> alterations = DataUtils::split(symbolToSplit, regexDelimiter);
 			int next;
 			bool flat = false;
 			bool sharp = false;

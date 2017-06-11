@@ -40,3 +40,4 @@ BEGIN_JUCE_MODULE_DECLARATION
 #include "Bach/MusicalStructures/Chord/MidiNotesToChordName.h"
 #include "Bach/MusicalStructures/Note/Note.h"
 #include "Bach/Utils/MidiUtils.h"
+#include "Bach/Utils/DataUtils.h"

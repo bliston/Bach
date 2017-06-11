@@ -12,6 +12,7 @@
 #define CHORDNAMETOMIDINOTES_H_INCLUDED
 #include "../../BachCommon.h"
 #include "../../Utils/MidiUtils.h"
+#include "../../Utils/DataUtils.h"
 #include<string>
 #include<regex>
 #include<vector>
@@ -36,7 +37,6 @@ private:
 	bool explicitMajor;
 	void resetState();
 	void setChord(String name);
-	Array<String> split(::std::string s, ::std::regex regexDelimiter);
 };
 }
 
