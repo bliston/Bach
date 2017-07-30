@@ -9,10 +9,11 @@
 */
 #include "ChordNameToMidiNotes.h"
 
-struct Bach::ChordRootAndType
+struct Bach::ChordInfo
 {
-	int root;
+	String root;
 	String type;
+	String bass;
 };
 
 Bach::ChordNameToMidiNotes::ChordNameToMidiNotes()
@@ -266,42 +267,73 @@ Array<String> Bach::ChordNameToMidiNotes::readChord(String symbol)
 	return notes;
 }
 
-Bach::ChordRootAndType Bach::ChordNameToMidiNotes::getChordRootAndType(String chordName, int octave)
+Bach::ChordInfo Bach::ChordNameToMidiNotes::getChordInfo(String chordName)
 {
-	String rootNote = chordName.substring(0, 2);
-	int rootMidiNoteNumber = midiUtils.pitchClassAndOctaveToMidiNumber(rootNote, octave);
-	String type = chordName.substring(2);
-	if (!midiUtils.isPitchClass(rootNote))
+	String bass = "C";
+	String root = "C";
+	String type = "";
+	bool hasBassInChordName = false;
+	String chordNameNoSlash;
+	StringArray tokens;
+	tokens.addTokens(chordName, "/", "");
+	chordNameNoSlash = tokens[0];
+	
+	//extract bass
+	if (tokens.size() == 2)
 	{
-		rootNote = chordName.substring(0, 1);
-		rootMidiNoteNumber = midiUtils.pitchClassAndOctaveToMidiNumber(rootNote, octave);
-		type = chordName.substring(1);
-		if (!midiUtils.isPitchClass(rootNote))
+		if (midiUtils.isPitchClass(tokens[1]))
 		{
-			return {-1, "INVALID"};
+			bass = tokens[1];
+			hasBassInChordName = true;
 		}
 	}
-	return {rootMidiNoteNumber, type};
+
+	//extract root and type
+
+	//assume root is two chars long ex: C#
+	root = chordNameNoSlash.substring(0, 2);
+	type = chordNameNoSlash.substring(2);
+
+	if (!midiUtils.isPitchClass(root))
+	{
+		//if not, assume root has one char ex: C
+		root = chordNameNoSlash.substring(0, 1);
+		type = chordNameNoSlash.substring(1);
+	}
+	if (!hasBassInChordName)
+	{
+		bass = root;
+	}
+	return {root, type, bass};
 }
 
-int Bach::ChordNameToMidiNotes::getChordRoot(String chordName, int octave)
+String Bach::ChordNameToMidiNotes::getChordBass(String chordName)
 {
-	return getChordRootAndType(chordName, octave).root;
+	return getChordInfo(chordName).bass;
 }
 
-String Bach::ChordNameToMidiNotes::getChordType(String chordName, int octave)
+String Bach::ChordNameToMidiNotes::getChordRoot(String chordName)
 {
-	return getChordRootAndType(chordName, octave).type;
+	return getChordInfo(chordName).root;
 }
 
-Array<int> Bach::ChordNameToMidiNotes::get(int chordRoot, String chordType)
+String Bach::ChordNameToMidiNotes::getChordType(String chordName)
+{
+	return getChordInfo(chordName).type;
+}
+
+Array<int> Bach::ChordNameToMidiNotes::get(String chordRoot, String chordType, String chordBass, int chordOctave)
 {
 	Array<int> midChord;
+	int midRoot = midiUtils.pitchClassAndOctaveToMidiNumber(chordRoot, chordOctave);
+	int midBass = midiUtils.pitchClassAndOctaveToMidiNumber(chordBass, chordOctave);
+	midBass = midRoot > midBass ? midBass - 12 : midBass;
 	Array<String> intervalArray = readChord(chordType);
+	midChord.add(midBass);
 	for (auto i : intervalArray)
 	{
 		jassert(midiUtils.isValidInterval(i));
-		midChord.add(midiUtils.intervalToMidiNoteValue(i) + chordRoot);
+		midChord.add(midiUtils.intervalToMidiNoteValue(i) + midRoot);
 	}
 	return midChord;
 }

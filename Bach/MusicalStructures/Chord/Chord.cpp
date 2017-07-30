@@ -20,20 +20,26 @@ Bach::Chord::Chord(String chordName) // A#m7
 	setChord(chordName);
 }
 
-void Bach::Chord::setChord(String chordName) // A#m7
+void Bach::Chord::setChord(String chordName) // A#m7/B
 {
-	root = chordNameToMidiNotes.getChordRoot(chordName, octave);
-	type = chordNameToMidiNotes.getChordType(chordName, octave);
+	root = chordNameToMidiNotes.getChordRoot(chordName);
+	type = chordNameToMidiNotes.getChordType(chordName);
+	bass = chordNameToMidiNotes.getChordBass(chordName);
 }
 
-void Bach::Chord::setRoot(int rootNote) // 36
+void Bach::Chord::setRoot(String rootNote) // A#
 {
-	root = rootNote;
+	bass = rootNote;
 }
 
 void Bach::Chord::setType(String chordType) // m7
 {
 	type = chordType;
+}
+
+void Bach::Chord::setBass(String bassNote) // B
+{
+	bass = bassNote;
 }
 
 Array<Bach::Note> Bach::Chord::getNotes()
@@ -44,7 +50,7 @@ Array<Bach::Note> Bach::Chord::getNotes()
 
 Array<int> Bach::Chord::getMidiNoteNumbers() // [48, 52, 55]
 {
-	Array<int> notes = chordNameToMidiNotes.get(root, type);
+	Array<int> notes = chordNameToMidiNotes.get(root, type, bass, octave);
 	return notes;
 }
 

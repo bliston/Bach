@@ -19,10 +19,11 @@ namespace Bach {
 	class Chord {
 	public:
 		Chord();
-		Chord(String chordName); // A#m7
-		void setChord(String chordName); // A#m7
-		void setRoot(int rootNote); // 36
+		Chord(String chordName); // A#m7/B
+		void setChord(String chordName); // A#m7/B
+		void setRoot(String rootNote); // A#
 		void setType(String chordType); // m7
+		void setBass(String rootNote); // B
 		Array<Note> getNotes();
 		Array<int> getMidiNoteNumbers(); // [48, 52, 55]
 		Array<String> getPitchClassWithOctaveNotes(); // [A3, C4, E4]
@@ -33,8 +34,9 @@ namespace Bach {
 		MidiUtils midiUtils;
 		ChordNameToMidiNotes chordNameToMidiNotes;
 		MidiNotesToChordName midiNotesToChordName;
-		int root;
+		String root;
 		String type;
+		String bass;
 		int octave;
 		//ChordVoicing voicing;
 	};

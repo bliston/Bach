@@ -17,14 +17,15 @@
 #include<regex>
 #include<vector>
 namespace Bach {
-	struct ChordRootAndType;
+	struct ChordInfo;
 class ChordNameToMidiNotes {
 public:
     ChordNameToMidiNotes();
-	Bach::ChordRootAndType getChordRootAndType(String chordName, int octave);
-	int getChordRoot(String chordName, int octave);
-	String getChordType(String chordName, int octave);
-	Array<int> get(int chordRoot, String chordType);
+	Bach::ChordInfo getChordInfo(String chordName);
+	String getChordBass(String chordName);
+	String getChordRoot(String chordName);
+	String getChordType(String chordName);
+	Array<int> get(String chordRoot, String chordType, String chordBass, int chordOctave);
 private:
 	MidiUtils midiUtils;
 	Array<String> readChord(String symbol);
